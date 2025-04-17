@@ -58,10 +58,13 @@ shadowJar {
     }
 }
 
+def osName = System.getProperty('os.name').toLowerCase()
+def osSuffix = osName.contains('windows') ? 'windows' : osName.contains('mac') ? 'macos' : 'linux'
+
 graalvmNative {
     binaries {
         named('main') {
-            imageName.set('swagger-convert')
+            imageName.set("swagger-convert-${osSuffix}")
             fallback.set(false)
             buildArgs.addAll(
                     '--no-fallback',

@@ -17,11 +17,11 @@ jobs:
       matrix:
         include:
           - os: ubuntu-latest
-            artifact: swagger-convert
+            artifact: swagger-convert-linux
           - os: macos-latest
-            artifact: swagger-convert
+            artifact: swagger-convert-macos
           - os: windows-latest
-            artifact: swagger-convert.exe
+            artifact: swagger-convert-windows.exe
 
     steps:
       - name: Checkout repository
