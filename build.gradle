@@ -47,7 +47,7 @@ tasks.test {
 }
 
 application {
-    mainClass.set('com.example.SwaggerConvert')
+    mainClass.set('com.zylquinal.swaggerconverter.SwaggerConvert')
 }
 
 shadowJar {
