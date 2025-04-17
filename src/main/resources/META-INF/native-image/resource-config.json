@@ -1,0 +1,15 @@
+{
+  "resources":{
+  "includes":[{
+    "pattern":"\\QMETA-INF/services/io.swagger.v3.parser.extensions.JsonSchemaParserExtension\\E"
+  }, {
+    "pattern":"\\QMETA-INF/services/java.lang.System$LoggerFinder\\E"
+  }, {
+    "pattern":"\\QMETA-INF/services/java.net.spi.URLStreamHandlerProvider\\E"
+  }, {
+    "pattern":"\\QMETA-INF/services/java.time.zone.ZoneRulesProvider\\E"
+  }, {
+    "pattern":"\\Qorg/slf4j/impl/StaticLoggerBinder.class\\E"
+  }]},
+  "bundles":[]
+}

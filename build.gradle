@@ -1,0 +1,83 @@
+plugins {
+    id 'java'
+    id 'application'
+    id 'com.gradleup.shadow' version '8.3.6'
+    id 'org.graalvm.buildtools.native' version '0.10.6'
+}
+
+group = 'com.zylquinal'
+version = '1.0.0'
+
+java {
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(21)
+    }
+}
+
+def converterVersion = '2.1.3'
+def picocliVersion = '4.7.4'
+def junitJupiterVersion = '5.10.0'
+def commonsIoVersion = '2.14.0'
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    implementation("io.swagger.parser.v3:swagger-parser-v2-converter:${converterVersion}")
+
+    implementation "info.picocli:picocli:${picocliVersion}"
+    annotationProcessor "info.picocli:picocli-codegen:${picocliVersion}"
+    testImplementation "org.junit.jupiter:junit-jupiter:${junitJupiterVersion}"
+    testImplementation "commons-io:commons-io:${commonsIoVersion}"
+
+    // Due to security issues
+    implementation "com.fasterxml.jackson.core:jackson-core:2.18.3"
+    implementation "com.fasterxml.jackson.core:jackson-databind:2.18.3"
+    implementation "com.google.guava:guava:32.0.1-android"
+    implementation "commons-io:commons-io:2.14.0"
+    implementation "commons-codec:commons-codec:1.15"
+    implementation 'org.yaml:snakeyaml:2.0'
+
+    implementation "org.slf4j:slf4j-nop:2.0.17"
+}
+
+tasks.test {
+    useJUnitPlatform()
+}
+
+application {
+    mainClass.set('com.example.SwaggerConvert')
+}
+
+shadowJar {
+    archiveBaseName.set('swagger-converter-cli')
+    archiveClassifier.set('')
+    manifest {
+        attributes 'Main-Class': application.mainClass.get()
+    }
+}
+
+graalvmNative {
+    binaries {
+        named('main') {
+            imageName.set('swagger-convert')
+            fallback.set(false)
+            buildArgs.addAll(
+                    '--no-fallback',
+                    '--enable-http',
+                    '--allow-incomplete-classpath',
+                    '--report-unsupported-elements-at-runtime'
+            )
+            resources {
+                includedPatterns.add('META-INF/services/io.swagger.v3.parser.util.OpenAPIParser')
+                includedPatterns.add('META-INF/services/com.fasterxml.jackson.databind.Module')
+                includedPatterns.add('META-INF/services/com.fasterxml.jackson.core.JsonFactory')
+            }
+        }
+    }
+
+    metadataRepository {
+        enabled = true
+    }
+}

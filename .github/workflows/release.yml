@@ -1,0 +1,56 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - 'v*.*.*'
+
+permissions:
+  contents: read
+  actions: read
+  packages: write
+
+jobs:
+  build:
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        include:
+          - os: ubuntu-latest
+            artifact: swagger-convert
+          - os: macos-latest
+            artifact: swagger-convert
+          - os: windows-latest
+            artifact: swagger-convert.exe
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup GraalVM
+        uses: graalvm/setup-graalvm@v1
+        with:
+          distribution: 'graalvm-community'
+          java-version: '21'
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Make Gradle wrapper executable
+        if: runner.os != 'Windows'
+        run: chmod +x gradlew
+
+      - name: Build native image
+        if: runner.os != 'Windows'
+        shell: bash
+        run: ./gradlew nativeCompile --no-daemon
+
+      - name: Build native image (Windows)
+        if: runner.os == 'Windows'
+        run: .\gradlew.bat nativeCompile --no-daemon
+
+      - name: Create Release and upload artifact
+        uses: softprops/action-gh-release@v1
+        with:
+          tag_name: ${{ github.ref_name }}
+          files: build/native/nativeCompile/${{ matrix.artifact }}
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
